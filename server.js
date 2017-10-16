@@ -1,3 +1,11 @@
+    // **** I apologize in advance for the half-assness of this lab.
+    //    Wasn't feeling well and my heart just wasn't in it **** //
+
+
+
+
+    
+
 // require express and other modules
 var express = require('express'),
     app = express(),
@@ -48,6 +56,11 @@ app.get('/api/todos/search', function search(req, res) {
   /* This endpoint responds with the search results from the
    * query in the request. COMPLETE THIS ENDPOINT LAST.
    */
+   let query = req.query.q;
+   let findTodo = todos.filter(function(e) {
+    return e.task.includes(query);
+   });
+   res.json({todos: findTodo});
 });
 
 app.get('/api/todos', function index(req, res) {
@@ -56,14 +69,17 @@ app.get('/api/todos', function index(req, res) {
    res.json({todos: todos});
 });
 
+ //keeps a counter for IDs
+let idPlus = 1;
 app.post('/api/todos', function create(req, res) {
   /* This endpoint will add a todo to our "database"
    * and respond with the newly created todo.
    */
-   var id = req.body._id;
-   id++;
-   res.json(req.body);
-   todos.push(req.body);
+   let id = idPlus;
+   let newTodo = {_id:id, task:req.body.task, description:req.body.description};
+   res.json(newTodo);
+   todos.push(newTodo);
+   idPlus++;
 });
 
 app.get('/api/todos/:id', function show(req, res) {
@@ -83,11 +99,15 @@ app.put('/api/todos/:id', function update(req, res) {
    * id specified in the route parameter (:id) and respond
    * with the newly updated todo.
    */
-   var id = req.params.id -1;
+   let oneTodo = todos.filter(function(e) {
+    return e._id == req.params.id;
+   });
+
+   var index = todos.indexOf(oneTodo[0]);
    
-   todos[id].task = req.body.task;
-   todos[id].description = req.body.description;
-   res.json(todos[id]);
+   todos[index].task = req.body.task;
+   todos[index].description = req.body.description;
+   res.json(oneTodo[0]);
 });
 
 app.delete('/api/todos/:id', function destroy(req, res) {
